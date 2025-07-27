@@ -18,6 +18,8 @@ bool matchhere(const char *regexp, const char *text) {
         return true;
     if (regexp[1] == '*')
         return matchstar(regexp[0], regexp + 2, text);
+    if (regexp[1] == '+')
+        return regexp[0] == *text++ && matchstar(regexp[0], regexp + 2, text);
     if (regexp[0] == '$' && regexp[1] == '\0')
         return *text == '\0';
     if (*text != '\0' && (regexp[0] == '.' || regexp[0] == *text))
@@ -39,4 +41,11 @@ int main() {
     assert(match("^aba$", "ababa") == false);
     assert(match("a*.c", "abab124124lla") == false);
     assert(match("a*a", "abab124124lla") == true);
+    assert(match(".*", "aslfjaslkfalksjg;ajsx,.cbm.c") == true);
+    assert(match("a+", "v") == false);
+    assert(match("a+", "a") == true);
+    assert(match("a+", "aa") == true);
+    assert(match("ba+", "baaa") == true);
+    assert(match("ba+q", "baaaq") == true);
+    assert(match("ba+q", "bq") == false);
 }
